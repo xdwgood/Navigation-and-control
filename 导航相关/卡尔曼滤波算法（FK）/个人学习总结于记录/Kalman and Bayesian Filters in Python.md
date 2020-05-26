@@ -4,7 +4,7 @@
 
 第一章：g-h-filter
 
-
+[![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/111.png)
 上图中我们假设A和B表示俩种传感器对同一状态进行测量所得到的结果，其中A的精度较高B较低，这个图直观的告诉我们：
 我们在进行状态估计的时候不应该放弃任何相关信息,即使它可能很糟糕！
 
