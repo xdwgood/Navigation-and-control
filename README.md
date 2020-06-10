@@ -31,5 +31,6 @@
 2020.6.4：    完成阅读《卡尔曼滤波和贝叶斯在python中》《Kalman and Bayesian Filters in Python》
 
 # 下一步学习计划
+阅读《卡尔曼滤波理论与实践》Kalman Filtering Theory and Practice Using MATLAB
 
 阅读《卡尔曼滤波及其实时应用第五版》《Kalman Filtering with Real-Time Applications》
