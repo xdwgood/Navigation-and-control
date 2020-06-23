@@ -75,3 +75,5 @@ UT建立在这样的直觉上：近似于概率分布比近似于任意非线性
 在UT传输中选择不同的simga点对均值估计没有影响，但会导致协方差不同，如下图：(a图选择了不同三角形状的simga点，图ｂ展示了协方差变化情况)
 
 ![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/197.png)
+
+### 论文的后段集中在ＵＦＫ的使用和ＥＫＦ的比较，总的来说这偏文章概述性强，具体使用较少，适合对ukf已经有一定了解的人。不推荐初学者（我自己）
