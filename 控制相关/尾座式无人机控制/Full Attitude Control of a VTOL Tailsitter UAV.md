@@ -6,7 +6,7 @@
 
 ## 第一部分：系统总览
 
-![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/216.png)
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/219.png)
 
 ## 第二部分：系统总览
 
