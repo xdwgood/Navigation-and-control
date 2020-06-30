@@ -67,3 +67,23 @@
 **注释**: 图最左侧为求得姿态和角速度误差输入控制器后，得出期望的三维旋转力矩，结合机翼产生的力和空速，控制器进行运算输出控制信号到马达和副翼。
 
 ### 4.2控制
+
+因为pitch和roll的控制更重要，因此我们优先控制pitch和roll,然后在控制航向。基于此设计控制公式如下：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/309.png)
+
+其中kR和kw为角度和角速率增益，Rref和Ωref为设定的角度和角速度。
+
+### 4.3控制器分配
+
+作用在系统上的力矩和力不仅受到执行器的影响，还受到系统当前状态的影响，例如系统的速度v及其迎角α。因此，必须采用基于状态的控制分配以创建所需的力矩。
+
+根据姿态控制器输出的期望力矩Ｍ和位置控制器输出的Fx，通过下图计算生成副翼偏转角和马达转速：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/310.png)
+
+其中ω1,ω2为马达转速δ1,δ2为副翼偏转角度
+
+## 第五部分：实验验证
+
+使用px4和Wingtra飞机
