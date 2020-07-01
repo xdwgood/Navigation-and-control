@@ -20,7 +20,7 @@ p、q、r 分别为三个轴上的角速度分量
 
 ![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/200.png)
 
-上面最后一个式子是矢量求导得出的。**Note:**向心加速度等于角速度叉乘线速度。机体速度（V）的变化就是角速度（w）
+上面最后一个式子是矢量求导得出的。**Note**:向心加速度等于角速度叉乘线速度。机体速度（V）的变化就是角速度（w）
 
 因此加速度a等于（飞机速度和角速度与加速度关系）：
 
@@ -44,7 +44,7 @@ p、q、r 分别为三个轴上的角速度分量
 
 ![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/204.png)
 
-即动量矩计算如下：
+即动量矩计算如下(补充１)：
 
 ![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/205.png)
 
@@ -54,7 +54,7 @@ p、q、r 分别为三个轴上的角速度分量
 
 **总结**:根据2-12如果在下面的步骤中计算出在机体系下合力F(=L／M／N+重力)，则可以计算出角速度，然后根据2-6即可计算出速度(u v w)
 
-### 将机体坐标系下的速度分量（u v w）通过欧拉角旋转到惯性坐标系下，如下：
+### 将机体坐标系下的速度分量（u v w）通过欧拉角旋转到惯性坐标系下，如下（补充２）：
 
 ![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/207.png)
 
@@ -64,3 +64,10 @@ p、q、r 分别为三个轴上的角速度分量
 
 ![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/208.png)
 ![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/209.png)
+
+
+### 补充知识点：
+
+１：转动惯量矩阵Ｉ：因为横纵平面为对称结构，所以Ｉxy = Iyz = 0
+
+２：旋转矩阵推导见：小型尾坐式垂直起降无人机飞行控制方法及试验研究　赵夏　20-21页
