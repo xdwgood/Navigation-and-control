@@ -71,3 +71,10 @@ p、q、r 分别为三个轴上的角速度分量
 １：转动惯量矩阵Ｉ：因为横纵平面为对称结构，所以Ｉxy = Iyz = 0
 
 ２：旋转矩阵推导见：小型尾坐式垂直起降无人机飞行控制方法及试验研究　赵夏　20-21页
+
+**Note**:速度和角速度的正确旋转关系如下，目前百度上很多矩阵Ｒ并不正确，赵夏文章中也是错误的
+
+**正确来源**：  https://pan.baidu.com/s/13M9Q0#list/path=%2F（飞行动力学）
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/311.png)
+
