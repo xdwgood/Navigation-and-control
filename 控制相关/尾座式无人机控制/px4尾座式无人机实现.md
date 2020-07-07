@@ -103,3 +103,5 @@ v3为螺旋桨后面的空速（作用在舵面上），v0为空速器测量，�
 ![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/327.png)
 
 最后得到期望力矩，然后根据无人机动态一节内容（旋转动量守恒），计算出转速和副翼偏转需求
+
+### 个人总结：该文章很多细节没有给出（升力/阻力系数），只是提供了一种思路,用于实践有困难
