@@ -1,4 +1,4 @@
-#来源：https://github.com/HoussemMEG/Genetic-algorithm-drone-LQR-control
+# 来源：https://github.com/HoussemMEG/Genetic-algorithm-drone-LQR-control
 
 # Genetic algorithm LQR control of drone
 
