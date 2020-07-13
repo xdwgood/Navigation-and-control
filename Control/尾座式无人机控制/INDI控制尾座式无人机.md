@@ -1,7 +1,5 @@
 论文来源：　　https://arxiv.org/pdf/1802.00714.pdf
 
-INDI相关资料来源：　https://github.com/paparazzi/paparazzi/pull/1207
-
 小知识点：
 
 １:**飞行包线(flight envelope)**：指特定型号的飞机的运行参数和功能。 构成飞行包线的各种参数包括飞机的最大高度，最大和最小速度，飞机可以承受的最大g力，爬升率，滑行率以及其他定义飞机飞行特性的因素。一般大的飞行包线意味着飞机有更灵活的飞行能力（eg：战斗机），小的飞行包线表示飞机可控制范围有限（eg:民航客机）
@@ -88,3 +86,13 @@ uc：执行器  **左右襟翼，右左马达（左flap为１，右flap为２，
 侧滑角定义如下：飞行器飞行速度矢量V与其纵向对称平面之间的夹角，如下图：
 
 ![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/218.png)
+
+# INDI相关论文：
+
+https://sci-hub.se/10.2514%2F1.G001490.
+
+https://sci-hub.se/10.1109%2FIROS.2016.7759827.
+
+https://github.com/paparazzi/paparazzi/pull/1207
+
+INDI相关资料来源：　https://github.com/paparazzi/paparazzi/pull/1207
