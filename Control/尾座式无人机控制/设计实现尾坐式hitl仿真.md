@@ -40,3 +40,49 @@
 
 
 在上图类型的车辆中，应考虑空气动力学表面上的局部流动条件，并基于组件分解方法对其进行建模。空气动力学表面相应地由许多段组成，每段产生了气动中心的升力，阻力和力矩。
+
+空气动力学中心的空速计算如下：其中最后一项为螺旋桨涡流贡献的速度，这个速度只在第二个区域存在。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/334.png)
+
+螺旋桨涡流贡献的速度计算如下，其中Tp是螺旋桨产生的推力，Ａ是螺旋桨盘面积，lp是计算点和螺旋桨盘距离，Rp是螺旋桨盘半径，
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/335.png)
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/336.png)
+
+滑流区域的攻角和侧滑角定义如下：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/337.png)
+
+滑流区域的空速定义如下：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/338.png)
+
+各个区域的升力、阻力和侧向力计算如下：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/339.png)
+
+在机体坐标系下表示如下：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/340.png)
+
+综上，由空气动力学产生的力和力矩计算如下：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/341.png)
+
+每一段的力矩计算如下：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/342.png)
+
+总的空气动力学产生的力矩计算如下：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/343.png)
+
+
+重力计算如下：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/344.png)
+
+
+# 剩余内容主要为风动实验手段和hitl设计
