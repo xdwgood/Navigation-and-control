@@ -32,7 +32,10 @@
 
 2020.7.1:     上传adrc论文和代码并新增视觉文件夹
 
+2020.7.14:    建立尾座式无人机建模／控制相关论文
+
 # 下一步学习计划
+
 阅读《卡尔曼滤波理论与实践》Kalman Filtering Theory and Practice Using MATLAB
 
 阅读《卡尔曼滤波及其实时应用第五版》《Kalman Filtering with Real-Time Applications》
