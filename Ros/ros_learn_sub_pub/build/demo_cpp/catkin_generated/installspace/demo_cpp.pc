@@ -1,0 +1,8 @@
+prefix=/home/dw/first_ws/install
+
+Name: demo_cpp
+Description: Description of demo_cpp
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

@@ -34,6 +34,8 @@
 
 2020.7.14:    建立尾座式无人机建模／控制相关论文
 
+2020.7.31:    start learn Ros
+
 # 下一步学习计划
 
 阅读《卡尔曼滤波理论与实践》Kalman Filtering Theory and Practice Using MATLAB

@@ -1,0 +1,8 @@
+prefix=/home/dw/first_ws/install
+
+Name: demo_py
+Description: Description of demo_py
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

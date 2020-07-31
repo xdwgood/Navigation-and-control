@@ -1,0 +1,8 @@
+prefix=/home/dw/first_ws/install
+
+Name: new_msgs
+Description: Description of new_msgs
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: roscpp rosmsg rospy message_runtime
