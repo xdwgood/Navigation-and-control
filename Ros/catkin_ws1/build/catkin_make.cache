@@ -1,0 +1,2 @@
+beginner_tutorials:nodelet_tutorials:pluginlib_tutorials
+-DCATKIN_DEVEL_PREFIX=/home/dw/Navigation-and-control/Ros/catkin_ws1/devel -DCMAKE_INSTALL_PREFIX=/home/dw/Navigation-and-control/Ros/catkin_ws1/install -G Unix Makefiles

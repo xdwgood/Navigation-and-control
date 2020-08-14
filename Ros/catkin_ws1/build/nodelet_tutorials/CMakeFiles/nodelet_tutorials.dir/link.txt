@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC   -shared -Wl,-soname,libnodelet_tutorials.so -o /home/dw/catkin_ws1/devel/lib/libnodelet_tutorials.so CMakeFiles/nodelet_tutorials.dir/src/nodelet_plugins.cpp.o 

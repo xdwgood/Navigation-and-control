@@ -1,0 +1,14 @@
+/home/dw/catkin_ws1/install/_setup_util.py
+/home/dw/catkin_ws1/install/env.sh
+/home/dw/catkin_ws1/install/setup.bash
+/home/dw/catkin_ws1/install/local_setup.bash
+/home/dw/catkin_ws1/install/setup.sh
+/home/dw/catkin_ws1/install/local_setup.sh
+/home/dw/catkin_ws1/install/setup.zsh
+/home/dw/catkin_ws1/install/local_setup.zsh
+/home/dw/catkin_ws1/install/.rosinstall
+/home/dw/catkin_ws1/install/lib/pkgconfig/beginner_tutorials.pc
+/home/dw/catkin_ws1/install/share/beginner_tutorials/cmake/beginner_tutorialsConfig.cmake
+/home/dw/catkin_ws1/install/share/beginner_tutorials/cmake/beginner_tutorialsConfig-version.cmake
+/home/dw/catkin_ws1/install/share/beginner_tutorials/package.xml
+/home/dw/catkin_ws1/install/lib/beginner_tutorials/hello_world

@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC   -shared -Wl,-soname,libpolygon_plugins.so -o /home/dw/catkin_ws1/devel/lib/libpolygon_plugins.so CMakeFiles/polygon_plugins.dir/src/polygon_plugins.cpp.o 

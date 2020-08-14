@@ -1,0 +1,8 @@
+prefix=/home/dw/catkin_ws1/devel
+
+Name: nodelet_tutorials
+Description: Description of nodelet_tutorials
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

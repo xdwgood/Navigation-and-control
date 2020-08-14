@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/dw/catkin_ws/devel/include/**",
+                "/opt/ros/melodic/include/**",
+                "/home/dw/catkin_ws/src/avoidance/avoidance/include/**",
+                "/home/dw/catkin_ws/src/avoidance/global_planner/include/**",
+                "/home/dw/catkin_ws/src/mavros/libmavconn/include/**",
+                "/home/dw/catkin_ws/src/avoidance/local_planner/include/**",
+                "/home/dw/catkin_ws/src/mavros/mavros/include/**",
+                "/home/dw/catkin_ws/src/mavros/mavros_msgs/include/**",
+                "/home/dw/catkin_ws/src/avoidance/safe_landing_planner/include/**",
+                "/home/dw/catkin_ws/src/mavros/test_mavros/include/**",
+                "/usr/include/**"
+            ],
+            "name": "ROS",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/opt/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-gcc",
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++14"
+        }
+    ],
+    "version": 4
+}
