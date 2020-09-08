@@ -47,3 +47,23 @@ b:初始化速度和位置，gyro,accel偏差，地磁和风速的方差，为�
 1:计算各个状态的过程噪声，单独处理加速度过程噪声根据数据情况。
 
 2:使用python代码预测协方差，增加过程噪声到预测的协方差中`nextP(i,i) = kahanSummation(nextP(i,i), process_noise(i), _delta_angle_bias_var_accum(index));`,其中地磁和风速添加过程噪声时的不需要使用Kahan求和是因为，这俩个状态的过程噪声不会比imu产生的噪声小很多
+
+
+
+16:开始地磁融合`controlMagFusion`,
+
+ａ：如果在飞行中复位yaw，则运行`has_realigned_yaw = resetMagHeading(_mag_lpf.getState())`,在这个函数中会使用yaw为０的角度重新计算一个旋转矩阵`R_to_earth`，然后将最新的地磁数据旋转到地球坐标系下并计算出新的`yaw_new`,然后使用新的yaw复位四元数`resetQuatStateYaw`,该函数计算出复位前后四元数误差`q_error`,并使用它再次调整四元数状态。
+
+ｂ：`selectMagAuto`该函数根据是否能有足够的观测数据来选择使用哪种地磁融合方式。然后执行`runMagAndMagDeclFusions`函数正式开始执行地磁融合计算。从代码上看，３Ｄ地磁融合和头融合的主要区别是：前者会计算/调整地磁和地磁偏差状态＋四元数状态，后者只是调整四元数（证据：`SparseVector24f<0,1,2,3,16,17,18,19,20,21> Hfusion;`），因此当磁场干扰较小时，3d融合方法会让四元数更准确，反过来说地磁偏差得到计算也意味着抵抗地磁干扰能力增加？？？
+
+ｃ：运行这个函数`run3DMagAndDeclFusions`,开始执行3d地磁融合。第一次运行会初始化地磁协方差，执行`fuseDeclination(0.02f);`融合计算磁偏角，首先将测量/观测值导入`	const float &magN = _state.mag_I(0);`推导流程参考**5磁偏观测**,然后计算更新值`atan2f(magE, magN) - getMagDeclination(),`,更新预测的状态`measurementUpdate`。之所以运行这个函数是因为这是求解航向必须的，`yaw_new = -atan2f(mag_earth_pred(1), mag_earth_pred(0)) + getMagDeclination();`
+
+ｄ：融合地磁`fuseMag`,详细推导见**4地磁融合＋３**。运行４和３的脚本后，流程是:
+
+1:首先计算地磁更新方差`_mag_innov_var`,运行4脚本得到ｘ轴的地磁更新方差`	_mag_innov_var(0) = HKX10*HKX20 - HKX11*HKX18 + HKX12*HKX22 + HKX13*HKX16 - HKX14*HKX19 + HKX15*HKX21 + HKX17*HKX6 + HKX23 + R_MAG;`.**why???**。在运行脚本３得到ｙ和ｚ的地磁更新方差`_mag_innov_var(1) = IV11*P(17,20) + IV11*(IV11*P(17,17).....`.如果这些方差过小/为负数，则停止融合计算。求地磁更新方差`	_mag_innov = mag_I_rot + _state.mag_B - _mag_sample_delayed.mag;`(预测值－测量值)
+
+2:评估ekf工作效果`_mag_test_ratio(index) = sq(_mag_innov(index)) / (sq(math::max(_params.mag_innov_gate, 1.0f)) * _mag_innov_var(index));`,**Note**:使用革新值和革新值不确定度（方差）相除，是一种标准的评判手段。
+
+3:计算Ｋ和Ｈ矩阵,并进行测量更新
+
+e:运行`fuseHeading`,选择合适的选择顺序`shouldUse321RotationSequence`，**why???**(应该是分别代表俩个欧拉角，依据俩个欧拉角大小决定最佳选择顺序).计算预测的航向`const float predicted_hdg = getEuler321Yaw(_R_to_earth);`,计算通过测量值得到的航向`measured_hdg = -atan2f(mag_earth_pred(1), mag_earth_pred(0)) + getMagDeclination();`,融合计算`fuseYaw321(measured_hdg, R_YAW, fuse_zero_innov);`,推导详情参考２航向观测融合。最后更新四元数状态,并进行最终的融合。
