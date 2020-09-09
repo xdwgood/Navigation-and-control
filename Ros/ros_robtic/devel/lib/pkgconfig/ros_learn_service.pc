@@ -1,0 +1,8 @@
+prefix=/home/dw/Navigation-and-control/Ros/ros_robtic/devel
+
+Name: ros_learn_service
+Description: Description of ros_learn_service
+Version: 0.0.0
+Cflags: -I/home/dw/Navigation-and-control/Ros/ros_robtic/devel/include
+Libs: -L${prefix}/lib 
+Requires: roscpp rosmsg message_runtime

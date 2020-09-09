@@ -5,4 +5,4 @@ Description: Description of ros_learn_7
 Version: 0.0.0
 Cflags: -I${prefix}/include
 Libs: -L${prefix}/lib 
-Requires: roscpp rosmsg rospy message_runtime
+Requires: roscpp rosmsg message_runtime

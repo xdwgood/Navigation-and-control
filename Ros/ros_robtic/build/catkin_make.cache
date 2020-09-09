@@ -1,2 +1,2 @@
-ros_learn_7
+ros_learn_7:ros_learn_service
 -DCATKIN_DEVEL_PREFIX=/home/dw/Navigation-and-control/Ros/ros_robtic/devel -DCMAKE_INSTALL_PREFIX=/home/dw/Navigation-and-control/Ros/ros_robtic/install -G Unix Makefiles

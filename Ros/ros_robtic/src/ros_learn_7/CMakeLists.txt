@@ -4,7 +4,6 @@ project(ros_learn_7)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rosmsg
-  rospy
   message_generation
 )
 
@@ -21,7 +20,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES new_msgs
-  CATKIN_DEPENDS roscpp rosmsg rospy message_runtime
+  CATKIN_DEPENDS roscpp rosmsg message_runtime
 #  DEPENDS system_lib
 )
 
