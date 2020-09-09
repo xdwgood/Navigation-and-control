@@ -48,7 +48,7 @@ b:初始化速度和位置，gyro,accel偏差，地磁和风速的方差，为�
 
 2:使用python代码预测协方差，增加过程噪声到预测的协方差中`nextP(i,i) = kahanSummation(nextP(i,i), process_noise(i), _delta_angle_bias_var_accum(index));`,其中地磁和风速添加过程噪声时的不需要使用Kahan求和是因为，这俩个状态的过程噪声不会比imu产生的噪声小很多
 
-
+16:开始高度传感器融合`controlHeightSensorTimeouts`
 
 16:开始地磁融合`controlMagFusion`,
 
@@ -67,3 +67,9 @@ b:初始化速度和位置，gyro,accel偏差，地磁和风速的方差，为�
 3:计算Ｋ和Ｈ矩阵,并进行测量更新
 
 e:运行`fuseHeading`,选择合适的选择顺序`shouldUse321RotationSequence`，**why???**(应该是分别代表俩个欧拉角，依据俩个欧拉角大小决定最佳选择顺序).计算预测的航向`const float predicted_hdg = getEuler321Yaw(_R_to_earth);`,计算通过测量值得到的航向`measured_hdg = -atan2f(mag_earth_pred(1), mag_earth_pred(0)) + getMagDeclination();`,融合计算`fuseYaw321(measured_hdg, R_YAW, fuse_zero_innov);`,推导详情参考２航向观测融合。最后更新四元数状态,并进行最终的融合。
+
+17:开始执行gps融合`controlGpsFusion`,第一次运行会执行`startGpsFusion`函数，这个函数会复位水平位置以及水平＋垂直方向的速度。不考虑其它位置信息源和来自gps的yaw。其中`else if (do_vel_pos_reset) {`这里的复位是针对有gps数据但因为质量等问题没有被融合使用，如果gps数据消失则在这里停止gps融合` (_control_status.flags.gps && (_imu_sample_delayed.time_us - _gps_sample_delayed.time_us > (uint64_t)10e6)) {`,再次恢复后会在`if (_control_status.flags.tilt_align && _NED_origin_initialised && gps_checks_passing) {`这里执行位置速度复位。在飞机正常运行时通常在这里运行`Only use GPS data for position and velocity aiding if enabled`.首先进行机体坐标系下的位置补偿`pos_offset_body = _params.gps_pos_body - _params.imu_pos_body;`，这一步的意义是将gps测量速度、位置同步到imu坐标点，因为预测的速度状态是gyro一段时间积分得到的，因此要在一个坐标系下。
+
+**思考**：速度补偿为什么这样计算???`vel_offset_body = _ang_rate_delayed_raw % pos_offset_body;`
+
+开始执行水平速度融合`fuseHorizontalVelocity`,注意在`fuseVelPosHeight`函数中的`KHP(row, column) = Kfusion(row) * P(state_index, column);`Ｈ为1×24向量，并且各个值为１。这是因为测量值就是预测的状态值，因此测量传递矩阵为１。最后执行融合更新`fuse(Kfusion, innov);`
