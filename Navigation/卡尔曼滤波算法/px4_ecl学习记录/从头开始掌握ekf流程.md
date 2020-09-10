@@ -92,4 +92,4 @@ e:运行`fuseHeading`,选择合适的选择顺序`shouldUse321RotationSequence`�
 
 3 :在`fuseVelPosHeight`中计算的`Kfusion(row) = P(row, state_index) / innov_var;`，`Kfusion(10...15)`存在不为０的值，因为速度位置和gyro/acc的偏差密切相关。
 
-总之，陀螺仪和加速度偏差更新和imu无关，与地磁或外部传感器计算出来的速度、位置通过（1协方差传递）相关性，产生联系并更新陀螺仪和加速度偏差
+总之，陀螺仪和加速度偏差更新与地磁或外部传感器计算出来的速度、位置通过（1协方差传递）相关性，产生联系并更新陀螺仪和加速度偏差
