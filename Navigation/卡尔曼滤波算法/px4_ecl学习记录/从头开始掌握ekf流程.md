@@ -48,7 +48,7 @@ b:初始化速度和位置，gyro,accel偏差，地磁和风速的方差，为�
 
 2:使用python代码预测协方差，增加过程噪声到预测的协方差中`nextP(i,i) = kahanSummation(nextP(i,i), process_noise(i), _delta_angle_bias_var_accum(index));`,其中地磁和风速添加过程噪声时的不需要使用Kahan求和是因为，这俩个状态的过程噪声不会比imu产生的噪声小很多
 
-16:开始高度传感器融合`controlHeightSensorTimeouts`
+16:检查垂直acc，并选择高度源执行垂直方向速度和位置复位`controlHeightSensorTimeouts`
 
 16:开始地磁融合`controlMagFusion`,
 
@@ -73,3 +73,7 @@ e:运行`fuseHeading`,选择合适的选择顺序`shouldUse321RotationSequence`�
 **思考**：速度补偿为什么这样计算???`vel_offset_body = _ang_rate_delayed_raw % pos_offset_body;`
 
 开始执行水平速度融合`fuseHorizontalVelocity`,注意在`fuseVelPosHeight`函数中的`KHP(row, column) = Kfusion(row) * P(state_index, column);`Ｈ为1×24向量，并且各个值为１。这是因为测量值就是预测的状态值，因此测量传递矩阵为１。最后执行融合更新`fuse(Kfusion, innov);`
+
+18:开始高度融合`controlHeightFusion`,在这里我们不使用rng高度辅助，并选择气压计高度`vdist_sensor_type`,正常情况下执行这里`startBaroHgtFusion();`,该函数完成使用气压计高度标志位设置和地效影响是否关闭。正式开始高度融合`_baro_hgt_innov(2) = _state.pos(2) + _baro_sample_delayed.hgt - _baro_hgt_offset;`,融合气压计高度`fuseVerticalPosition(_baro_hgt_innov....`.**小总结**：无论是高度还是速度的融合，内部的状态是根据imu数据计算出来的，观测数据是gps、baro。所以在ekf中的imu数据只是在预测阶段被使用。
+
+19:如果gps正常，不会执行`controlFakePosFusion`函数，该函数的作用是限制位置估计，不会让位置估计在没有gps情况下估计的太不合理`_gps_pos_innov.xy() = Vector2f(_state.pos) - _last_known_posNE;`
