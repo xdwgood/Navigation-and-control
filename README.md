@@ -8,8 +8,6 @@
 
 2：分享有价值的内容（目前仅涉及导航和控制相关）
 
-3：为国内想学习控制和导航方面的人提供 ”开始“，而不是大量没有价值的搜索和广告
-
 # 一些原则
 
 1：欢迎各位提供有关导航和控制方面有价值的文献/学习体系/个人理解/资料......
@@ -30,14 +28,14 @@
 
 2020.6.4：    完成阅读《卡尔曼滤波和贝叶斯在python中》《Kalman and Bayesian Filters in Python》
 
-2020.7.1:     上传adrc论文和代码并新增视觉文件夹
+2020.7.1:     上传adrc论文和代码
 
 2020.7.14:    建立尾座式无人机建模／控制相关论文
 
 2020.7.31:    start learn Ros
 
+2020.9.10     初步完成px4　ecl代码理解
+
 # 下一步学习计划
 
 阅读《卡尔曼滤波理论与实践》Kalman Filtering Theory and Practice Using MATLAB
-
-阅读《卡尔曼滤波及其实时应用第五版》《Kalman Filtering with Real-Time Applications》
