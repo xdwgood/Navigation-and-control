@@ -13,6 +13,10 @@ int main(int argc,char **argv){
     srv.request.a = 1;
     srv.request.b = 2;
 
+    // rosrun ros_learn_service service_client 4 5
+    // srv.request.a = atoll(argv[1]);
+    // srv.request.b = atoll(argv[2]);
+
     if(ros_learn_service_client.call(srv)) {
 
         ROS_INFO("receive %ld",(long int)srv.response.result);
