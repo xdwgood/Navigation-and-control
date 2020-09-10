@@ -82,6 +82,12 @@ e:运行`fuseHeading`,选择合适的选择顺序`shouldUse321RotationSequence`�
 
 # 补充一些面试问题
 
-１：ekf里面是如何估计陀螺仪和加速度偏差的？
+### １：ekf里面是如何估计陀螺仪和加速度偏差的？
 
-答：实际上实在协方差预测的时候，计算了以上俩个偏差。正如python脚本展示的一样，偏差被作用到预测状态中`d_ang_true = d_ang - d_ang_b`,初始化时候会给定gyro/acc的初始值（不为０）。在计算过程转移矩阵(Ａ/Ｆ)的时候，由于偏差已经作用到`state_new`,因此在协方差传递公式`P_new = A * P * A.T + G * var_u * G.T`中也包含了偏差方差的传递。在３Ｄ地磁融合中(会在python脚本中计算好卡尔曼增益)`Kfusion(row) = HKX24*(HKX10*P(row,17) - HKX11*P(row,18) + HKX12*P(1,row) + HKX13*P(0,row) - HKX14*P(2,row) + HKX15*P(3,row) + HKX6*P(row,16) + P(row,19));`这里的Ｐ矩阵即是在协方差预测矩阵中计算出来的，得到gyro/acc的偏差卡尔曼增益后，乘上相应的更新（在这里是地磁更新）得到新的偏差状态`_state.delta_ang_bias -= K.slice<3, 1>(10, 0) * innovation;`.在`fuseVelPosHeight`中计算的`Kfusion(row) = P(row, state_index) / innov_var;`(因为该状态固定`state_index`)相应gyro和acc偏差的结果为０．因此不产生影响对gyro/acc偏差估计。
+答：在协方差预测的时候，计算了以上俩个偏差状态的协方差矩阵。正如python脚本展示的一样，偏差被作用到预测状态中`d_ang_true = d_ang - d_ang_b`（**Note**:观察预测过程代码可以发现陀螺仪和加速度偏差影响四元数状态、速度、位置。因此在下面的１和２是地磁通过影响四元数而产生和偏差的联系，３是速度位置直接和偏差联系）,初始化时候会给定gyro/acc的初始值（不为０）。在计算过程转移矩阵(Ａ/Ｆ)的时候，由于偏差已经作用到`state_new`(gyro/acc偏差与各个状态间的联系由此产生),因此在协方差传递公式`P_new = A * P * A.T + G * var_u * G.T`中也包含了gyro/acc偏差方差的传递。
+
+１：在３Ｄ地磁融合中(会在python脚本中计算好卡尔曼增益)`Kfusion(row) = HKX24*(HKX10*P(row,17) - HKX11*P(row,18) + HKX12*P(1,row) + HKX13*P(0,row) - HKX14*P(2,row) + HKX15*P(3,row) + HKX6*P(row,16) + P(row,19));`这里的Ｐ矩阵即是在协方差预测矩阵中计算出来的，得到gyro/acc的偏差卡尔曼增益后，乘上相应的更新（在这里是地磁更新）得到新的偏差状态`_state.delta_ang_bias -= K.slice<3, 1>(10, 0) * innovation;`.
+
+２：在普通航向融合中`fuseHeading`,会调用这个函数`updateQuaternion(innovation, R_YAW, innov_gate, H_YAW);`,调用`fuse(Kfusion, _heading_innov)`时候Kfusion(10...15)的值为不为０，因为地磁更新和gyro/acc相关，存在联系故存在协方差。
+
+3 :在`fuseVelPosHeight`中计算的`Kfusion(row) = P(row, state_index) / innov_var;`，`Kfusion(10...15)`存在不为０的值，因为速度位置和gyro/acc的偏差密切相关。
