@@ -93,3 +93,36 @@ e:运行`fuseHeading`,选择合适的选择顺序`shouldUse321RotationSequence`�
 3 :在`fuseVelPosHeight`中计算的`Kfusion(row) = P(row, state_index) / innov_var;`，`Kfusion(10...15)`存在不为０的值，因为速度位置和gyro/acc的偏差密切相关。
 
 总之，陀螺仪和加速度偏差更新与地磁或外部传感器计算出来的速度、位置通过（1协方差传递）相关性，产生联系并更新陀螺仪和加速度偏差
+
+### 2：使用EKF设计一个机器人位置估计器，已知机器人上装有速度传感器和yaw速率传感器（为输入向量ｕ）和GNSS传感器（为观测向量ｚ）（均存在噪声）。给定状态向量为X＝[x,y,r,v],xy为位置，ｒ为方向，ｖ为速度。（初始速度为１m/s，ｙａｗ速率0.1rad/s）
+
+答：
+
+１：确定输入向量ｕ=[v,yaw_rate]
+
+2:确定运动模型x = Fx + Bu，其中    F = [[1.0, 0, 0, 0],
+                                     [0, 1.0, 0, 0],
+                                     [0, 0, 1.0, 0],
+                                     [0, 0, 0, 0]] //这里的速度不是增量式的，因此我们不能设置为1.0（上一刻速度＋当前速度是不对的）
+
+                B = [[DT * cos(x[2, 0]), 0], //速度ｖ分解到ｘ位置方向，其中x[2, 0]为方向r
+                    [DT * sin(x[2, 0]), 0],
+                    [0.0, DT],
+                    [1.0, 0.0]]
+
+3:确定状态雅克比矩阵JF:
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/223.png)
+
+```
+    motion model
+    x_{t+1} = x_t+v*dt*cos(yaw)
+    y_{t+1} = y_t+v*dt*sin(yaw)
+    yaw_{t+1} = yaw_t+omega*dt
+    v_{t+1} = v{t}
+    so
+    dx/dyaw = -v*dt*sin(yaw)
+    dx/dv = dt*cos(yaw)
+    dy/dyaw = v*dt*cos(yaw)
+    dy/dv = dt*sin(yaw)
+```
