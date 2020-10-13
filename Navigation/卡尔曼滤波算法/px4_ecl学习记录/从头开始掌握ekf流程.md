@@ -126,3 +126,4 @@ e:运行`fuseHeading`,选择合适的选择顺序`shouldUse321RotationSequence`�
     dy/dyaw = v*dt*cos(yaw)
     dy/dv = dt*sin(yaw)
 ```
+代码答案这里：https://github.com/xdwgood/Navigation-and-control/blob/master/Navigation/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E7%AE%97%E6%B3%95/%E5%85%B6%E4%BB%96/ekf.py
