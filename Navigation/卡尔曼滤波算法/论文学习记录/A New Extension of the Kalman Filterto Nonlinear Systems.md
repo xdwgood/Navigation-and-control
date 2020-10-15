@@ -28,4 +28,12 @@
 
 ### 2.1问题陈述
 
-　　我们....
+　　我们希望将KF应用到如下形式的非线性离散时间系统中：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/224.png)
+
+x(k)是在时间ｋ时ｎ维系统状态，u(k)是输入向量，v(k)是由于扰动和建模误差引起的ｑ维状态过程噪声向量，z(k)是观测向量，w(k)是测量噪声。我们假设v(k)和w(k)为０均值以及：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/225.png)
+
+  卡尔曼滤波器递归地传播“x（k）”分布的第一个(k)和第二个(k+1)时刻，并具有独特的“预测器-校正器”结构。
