@@ -156,4 +156,54 @@ x(k)是在时间ｋ时ｎ维系统状态，u(k)是输入向量，v(k)是由于�
 
   *最后，预测互相关矩阵Pxz(k+1|k)。
 
-  通过稍微重构状态向量以及过程和观察模型，可以轻松地容纳这些步骤。
+  通过稍微重构状态向量以及过程和观察模型，可以轻松地容纳这些步骤.首先，用过程项和噪声项对状态向量进行扩增，得到一个n的a次方=n+q维向量,
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/241.png)
+
+这个过程模型被重新写为x的ａ次方(k)函数，
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/242.png)
+
+并且无味传输使用2n的a次方＋１sigma点，这是来自：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/243.png)
+
+  主对角线上的矩阵是协方差，非对角线上的子块是状态误差与过程噪声之间的相关性。虽然这种方法需要使用额外的sigma点，但这意味着引入过程噪声（就其对均值和协方差的影响而言）的影响与状态中的不确定度具有相同的精度。这个公式也意味着相关噪声源（这个在Schmidt-Kalman滤波器中可能会出现）可以非常容易地实现.描述无味传输的式子在下表中被给出：
+
+ 1.simga点集是通过将方程12应用于由方程15给出的扩增系统来创建的。
+
+ 2.通过过程模型实例化每个点得到转换集，
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/244.png)
+
+ 3.计算预测的平均值，
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/245.png)
+
+ 4.计算预测的协方差，
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/246.png)
+
+ 5.通过观测模型实例化每一个预测点，
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/247.png)
+
+ 6.预测观测值的计算公式为,
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/248.png)
+
+ 7.由于观测噪声是可加和独立的，因此革新协方差，
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/249.png)
+
+ 8.最后，互相关矩阵计算如下，
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/250.png)
+
+  可以对该基本方法进行各种扩展和修改，以考虑给定应用程序的特定细节。例如，如果观测噪声是以非线性方式引入的，或者与过程和/或观测噪声相关，那么扩展向量以包括观测项。
+  
+  本部分开发了无味的转换，因此可以将其用于过滤和跟踪应用程序。下一部分将演示其在示例应用程序中相对于EKF的好处。
+
+
+## 应用例子
+
