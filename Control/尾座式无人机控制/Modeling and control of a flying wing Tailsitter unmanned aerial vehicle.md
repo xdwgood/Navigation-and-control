@@ -131,3 +131,110 @@ FireFLY6 是使用开源 Pixhawk 硬件控制器的倾转旋翼设计。 它是�
 
 ![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a3.png)
 
+实时模拟器以图形方式显示在上图中。许多动力学块计算 CM 处的力和力矩，然后将这些力和力矩添加并馈送到运动方程（方程 2.1），然后将其积分以生成状态 p、vB、q、ωb。
+
+作用在质心上机体上的力FB， 是重力 F g 、推进器力 F th 、空气动力 F a 、杆阻力 F r 和地面接触力 F c 的总和：
+
+F B = F g + F t h + F a + F r + F c   （2.2）
+
+类似地，作用在质心上机体上的力矩 M B = [L, M, N] T 是推进器和陀螺力矩 Mth 、空气动力学力矩 M a 、杆阻力力矩 M r 和地面接触力矩 M c 的总和：
+
+M B = M t h + M a + M r + M c         （2.3）
+
+由重力引起的力在第 2.3.2 节中描述。 它直接作用于**CM（质心）**，因此没有创建时刻。
+
+为了计算机翼产生的空气动力，实施了组件分解方法，在第 2.3.3 节中进行了报告。机翼被分成梯形段。每个表面以自己的速度移动，如第 2.3.1 节所述，并围绕其空气动力学中心产生升力、阻力和俯仰力矩。然后将力和力矩相加并传输到CM。 由于滑流或飞机的高转速，该方法允许对机翼表面上的部分流动条件进行建模。通过将机翼视为平板来获得空气动力和力矩（文献23）。该模型预测整个飞行包线的空气动力学、失速效应、低展弦比和后掠的影响以及具有大偏转的大控制面。
+
+使用类似的部件分解方法来模拟起落架和其他附件引起的阻力，这些附件被视为杆段。这在第 2.3.4 节中描述。通过考虑油门信号和流入速度来评估推进器力和扭矩。 还考虑了陀螺力矩，这些力矩是飞机旋转时螺旋桨角动量守恒产生的力矩。 推进器模型在第 2.3.5 节中描述。最后，为了模拟起飞和着陆阶段，开发了地面接触模型。 该模型在第 2.3.7 节中介绍，其中考虑了飞机上的特定外部点。 当这些点与地面接触时，会产生与穿透距离成正比的反作用力以及摩擦力。
+
+
+### 2.3.1:速度和攻角
+
+
+需要针对空气动力学模型和推进器模型评估飞机上不同点的速度。 在机身框架 B 中工作，位于飞机上位置 ri 处的任意点 i 相对于空气的速度可以通过以下公式找到：
+
+v i = vB + ω B × r i − vw,B    (2.4)
+
+其中 vw,B 是由 Dryden 风模型生成的车身框架中的风速，如附录 B 中所述。该方程适用于滑流之外的任何点。
+
+速度可以分解为 v i = [u i , v i , w i ]T 的分量。 水平段的攻角 αi 是流入速度和翼型弦线之间形成的入射角，可以从下式找到：
+
+α i = atan2(w i , ui )      (2.5)
+
+垂直段（即小翼）的攻角，也称为侧滑角 βi 可以计算为：
+
+β i = atan2(v i , ui )    (2.6)
+
+当一个点在滑流内部时，纵向分量 ui 被修改，因为推进器沿纵向轴线吹动。速度 ui 分别修改为 vl,x 和 vr,x ，定义如下，分别用于左侧和右侧推进器后面的部分。动量理论可用于预测螺旋桨盘下游远处的速度(文献17)。正如在小型飞机螺旋桨上的实验所报告的那样（26），动量理论对螺旋桨盘下游 1 到 3 螺旋桨半径之间的距离给出了合理的预测。该距离范围对应于螺旋桨盘后面的操纵面位置。 基于此，左右螺旋桨将产生纵向气流，其速度由下式给出：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a4.png)
+
+其中 rp 是螺旋桨半径，vin,l , vin,r是左右推进器的流入速度。可以使用公式 2.4 将它们计算为螺旋桨位置处速度的第一个分量。根据相同的理论，当飞机静止时（即推进器没有流入速度）,滑流的直径由 ds = 根号2 x rp 给出。 这个量是为暴露于滑流速度的翼段的宽度选择的。根据相同的理论，螺旋桨盘处的速度 vd 由下式给出：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a5.png)
+
+这些量用于模拟螺旋桨护罩上的速度。
+
+
+### 2.3.2:重力
+
+
+重力产生作用于质心 (CM) 的力 Fg：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a6.png)
+
+其中g是通常的重力加速度 [m/s 2 ]。 不会产生力矩，因为该力直接作用在 CM 上。质心位置位于后缘前方距离 dx=0.13m处，并假设与推进器的旋转轴和机翼弦线在同一水平面内。质量 m 是在一个称上测量的，而惯性矩阵 I 和质心位置是使用附录 A 中描述的高保真 CAD 模型评估的。
+
+
+### 2.3.2:机翼空​​气动力学
+
+
+机翼的空气动力和力矩通过部件分解进行建模。 每个段都有自己的速度，使用方程 2.4 计算，在其表面 Si 上，并产生自己的升力、阻力和绕其空气动力学中心的俯仰力矩。 然后将每个段的力和力矩相加以形成空气动力Fa 和空气动力力矩Ma。虽然尾翼的翼型不是平的，但选择为平板轮廓开发的模型(23)作为可用数据来评估整个飞行包线以及具有大挠度的大型控制面的空气动力和力矩。对于这个尾翼，飞翼被分成九个水平段，这些段构成了捕获滑流和带有控制面的部分的最少数量。在每个翼尖添加一个垂直段，见下图：
+
+组件分解。 蓝色部分暴露于左侧滑流，绿色部分暴露于右侧滑流。 粗的黑色组件代表结构组件，建模为产生阻力的杆段。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a7.png)
+
+每个水平段i具有平均空气动力弦ci和跨度bi，在其空气动力中心ri处产生力Fi为：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a8.png)
+
+其中 CL 是升力系数，CD 是阻力系数，后面会介绍。 每个水平段，知道它们的俯仰力矩在空气动力学中心CM,ac处，也会产生一个力矩Mi = [0, M i , 0] T：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a9.png)
+
+类似地，每个垂直段 i 在其空气动力中心 r i 处产生一个力 F i 为：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a10.png)
+
+
+其中 βi 是第 2.3.1 节中定义的段 i 的侧滑角。 垂直线段矩定义为 M i = [0, 0, N i ] T ，其中：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a12.png)
+
+然后将每段的空气动力和力矩传输到飞机的质心，如下所示：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a13.png)
+
+
+表 2-1：水平翼段，从左到右。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a11.png)
+
+表 2-1 报告了飞翼水平段的几何特征。 显示的参数是几何框架 G 中给出的段面积 S i 、跨度 b i 、MAC ci 、襟翼弦 cf ,i 和气动中心 ri,G。 从该表中，机翼的气动中心可以计算为：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a14.png)
+
+类似地，表 2-2 报告了两个垂直段的特征，即小翼(俩个支撑架)。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a15.png)
+
+在线性范围内，以下升力曲线斜率用于飞翼段，如(18)中所述：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a16.png)
+
+其中 Λ 是扫掠角（sweep angle），取为19.8度，水平段的纵横比 AR取为 3.13。 同样在线性范围内，以下方程用于描述升力和阻力系数：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a17.png)
+
+其中 CD,0 是机翼表皮摩擦引起的阻力系数，k0是Oswald的效率因子。
