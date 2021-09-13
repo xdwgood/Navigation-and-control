@@ -348,3 +348,65 @@ M gyro = −ωB × Ith ωp xB         2.25
 ![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a34.png)
 
 这个简化的模型将在第 3.2.4 节中使用，其中控制器必须确定控制偏转以用于获得所需的控制力矩和力。
+
+
+### 2.5 测量
+
+
+本节描述了为补充模拟器模型而进行的测量。 第一个实验测量了安装在力扭矩传感器上的推进器的推进器系数。 第二个实验测量了作为 PWM 命令信号的函数的升降舵偏转角。 第三个实验旨在通过将整个飞机安装在力扭矩传感器上来测量滑流中控制面的有效性。
+
+
+### 2.5.1 推进器系数
+
+
+本节报告了为定义推进器模型而进行的实验，如第 2.3.6 节所述。 首先，提出了一种用于电调和电机的模型，用于根据电池电压和油门信号估计螺旋桨的角速度。
+
+为了测量 ESC 和电机特性，将整个带螺旋桨的推进器固定在静态表面上。 首先，将 ESC 校准为使用脉冲宽度调制信号 (PWM)，高时间范围为 1000 [μs] 至 2000 [μs]。 在这种情况下，范围从 0 到 1 的油门 τ 与以 [μs] 为单位的 PWM 高电平时间 PW M h 相关为：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a35.png)
+
+使用直流电源 HY3005F-3 为电调提供电压。 油门信号被转换为发送到 ESC 的 PWM 信号。 螺旋桨的角速度是从示波器 Hantek DSO5102B 中获取的，该示波器测量了无刷电机两相之间的差频。 该测量由光学 RPM 传感器 Hangar 9 HAN156 验证，该传感器不太准确，但提供了示波器测量的交叉检查。
+
+测量不同电压和油门信号的螺旋桨角速度，提供图 2-12 所示的数据点。为了更好的理解电池电压的影响，每个电压下的数据点被缩放为该电压的函数。结果发现，当它们按 Vbatt0.8 缩放时，不同电压下的数据大约折叠到一条线上。 然后使用二阶多项式对这条线进行曲线拟合，得到以下模型：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a36.png)
+
+带有记录数据的模型如图 2-12 所示。 公式 2.43 用于填补前面描述的公式 2.29 的作用。图 2-12：在不同电池电压 V batt 下，角速度 ω p 作为油门 τ 的函数。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a37.png)
+
+为了评估推力系数 CT 和功率系数 CP ，需要进行风洞实验来估计它们作为流入速度 vin 的函数，或者等效地作为提前比 J 的函数。而不是进行我们自己的风洞实验，我们首先在零流入速度 (J = 0) 下进行实验，并依靠外部风洞测量来完成非零 J 的模型。
+
+电机向上安装在力扭矩传感器 ATI mini40 校准的 SI-20-1 上，能够测量高达 20N 的力和高达 1 Nm 的扭矩，参见图 2-13。 在此设置中，由于电机直径大于安装杆直径，因此假设安装件的阻力可以忽略不计。推力T和扭力Q可以被传感器直接测量：
+
+T = Fz
+
+Q = Mz         2.44
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a38.png)
+
+安装设备的工作台可能会对测得的推力产生影响。  Cheeseman 和 Bennett(31)提出了一个基于功率守恒的方程来估计这种影响。 他们预测由地面效应引起的推力的增加为：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a39.png)
+
+在本实验中，r p = 62.5mm是螺旋桨半径，z = 258.5mm是螺旋桨在地面以上的位置。 公式 2.45 预测推力增加 0.37%，因此假设这种影响可以忽略不计。
+
+螺旋桨推力 T 和扭矩 Q 在不同螺旋桨角速度 ωp 下记录。 然后，使用以下方法获得静态推力和功率系数：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a40.png)
+
+其中 ρ 是环境空气密度，而 rp 是螺旋桨的半径。 这些系数随ωp 的变化如图2-14 所示:
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a41.png)
+
+图 2-14：角速度的静态螺旋桨系数函数。  C T,l , C T,r 和 C T,GWS 是我们实验中左右螺旋桨的静推力系数，以及数据库中的GWS螺旋桨。 类似地，CP,l 、CP,r 和CP,GWS 是静态功率系数。
+
+角速度的测量推力和功率系数函数与来自 UIUC 数据库的螺旋桨进行了比较(29)。 选择了具有相似系数平均值和趋势的螺旋桨：GWS Direct Drive 4.5x3 英寸。 其静态系数也如图 2-14 所示。 非零 J 值下的 GWS 螺旋桨推力和功率系数经过曲线拟合和缩放，以匹配我们实验中螺旋桨的静态系数。 所得螺旋桨系数作为提前比的函数如图 2-15 所示，如下所示：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a42.png)
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a43.png)
+
+图 2-15：推力和功率系数模型，提前比的函数。
+
+所使用的模型假设，在垂直下降期间出现的负提前比下，静态系数是有效的。 对于较小的负提前比率 (-0.3 < J < 0)，该假设得到了实验数据的验证(32)。
