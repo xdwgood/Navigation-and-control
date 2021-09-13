@@ -186,7 +186,7 @@ v i = vB + ω B × r i − vw,B    (2.4)
 其中g是通常的重力加速度 [m/s 2 ]。 不会产生力矩，因为该力直接作用在 CM 上。质心位置位于后缘前方距离 dx=0.13m处，并假设与推进器的旋转轴和机翼弦线在同一水平面内。质量 m 是在一个称上测量的，而惯性矩阵 I 和质心位置是使用附录 A 中描述的高保真 CAD 模型评估的。
 
 
-### 2.3.2:机翼空​​气动力学
+### 2.3.3:机翼空​​气动力学
 
 
 机翼的空气动力和力矩通过部件分解进行建模。 每个段都有自己的速度，使用方程 2.4 计算，在其表面 Si 上，并产生自己的升力、阻力和绕其空气动力学中心的俯仰力矩。 然后将每个段的力和力矩相加以形成空气动力Fa 和空气动力力矩Ma。虽然尾翼的翼型不是平的，但选择为平板轮廓开发的模型(23)作为可用数据来评估整个飞行包线以及具有大挠度的大型控制面的空气动力和力矩。对于这个尾翼，飞翼被分成九个水平段，这些段构成了捕获滑流和带有控制面的部分的最少数量。在每个翼尖添加一个垂直段，见下图：
@@ -238,3 +238,113 @@ v i = vB + ω B × r i − vw,B    (2.4)
 ![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a17.png)
 
 其中 CD,0 是机翼表皮摩擦引起的阻力系数，k0是Oswald的效率因子。
+
+随着迎角的增加，气流在称为“失速”的过程中与上表面分离，该过程逐渐发生。 为了解决这个问题，(23)中的模型包括一个术语，用于从机翼上表面逐渐分离气流，从后缘开始，以及湍流前缘涡流，这两者都会导致升力损失 . 完全失速时的攻角 αhigh 对应于完全的流动分离，是从经验数据库中检索的，该数据库列出了不同平板纵横比的经验数据库。控制面偏转具有增加翼段弯度和减少有效弦长的作用。 结果是升力、阻力和力矩曲线的移动以及失速攻角 αhigh 的修改。一套完整的方程，包括失速模型、操纵面偏转效应、垂直段和力矩系数，读者可以参考(21)。
+
+整机全飞行包线升阻系数如图2-5所示，整机俯仰力矩系数如图2-6所示。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a18.png)
+
+图 2-5：整架飞机的空气动力系数。 升力系数 C L 用黑色表示，阻力系数 C D 用蓝色表示。 两种力都用处于最小、零和最大偏转角的两个升降副翼表示，分别用平面、带点的平面和虚线表示。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a19.png)
+
+图 2-6：整架飞机的俯仰力矩系数。 它用处于最小、零和最大偏转角的两个升降副翼表示，分别用平面、带点的平面和虚线表示。
+
+
+### 2.3.4 结构段空气动力学
+
+这里主要讲的是起落架和桨叶保护罩对模型的影响，我选择忽略它。
+
+
+#### 2.3.5 推进器和陀螺力矩
+
+
+左右推进器产生沿 x B 轴指向前方的推力 T l 和 T r。 因此推进器力 Fth 是纯粹的纵向力：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a20.png)
+
+左右推进器分别位于距 CM 的横向距离 l 和 -l 处。 推进器与 CM 位于同一水平面，它们沿纵轴的位置不会影响产生的力矩，因为推进器仅沿 x B 轴产生力。 推力产生绕 z B 轴的偏航力矩。 此外，每个螺旋桨都会产生一个扭矩 Q。在这个平台上，左螺旋桨顺时针旋转，右螺旋桨逆时针旋转，从而产生相反方向的扭矩。推进器产生的力矩由 MT 给出：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a21.png)
+
+然后将陀螺力矩 M gyro 与 MT 相加以产生 Mth 。 反作用陀螺力矩是由于旋转推进器的角动量随机体速率的变化率引起的，由下式给出：
+
+M gyro = −ωB × Ith ωp            2.24
+
+其中 ω B = [p, q, r] T 是飞机的机体速率，I th 是推进器旋转部件的惯性矩阵，取自旋转轴上的一点，ωp 是推进器的角速度。由于推进器围绕 xB 轴以高转速 ωp 旋转，因此选择将螺旋桨视为具有固定惯性的等效圆盘。 圆盘的对称性产生了一个对角惯性矩阵，将方程 2.24 简化为：
+
+M gyro = −ωB × Ith ωp xB         2.25
+
+其中 Ith 是推进器旋转部件绕 xB 轴的标量惯性。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a22.png)
+
+该方程相对于推进器角速度是线性的。 假设左右推进器的惯性相同，ωp 可以替换为 ω l − ω r ：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a23.png)
+
+其中 ω l 和 ω r 是左右推进器角速度，均为正值。Ith 根据CAD 模型估计为1.626 · 10 -6 [kg m 2 ]。最后，总推进器力矩 M th 为：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a24.png)
+
+
+### 2.3.6 推进力和扭矩
+
+
+需要根据油门信号产生推力和扭矩，还需要考虑流入速度对推力的影响。 叶片元素动量理论(28)可用于模拟螺旋桨空气动力学。在这种情况下，螺旋桨需要分解成多个部分，然后将这些部分视为翼型，根据自身速度产生升力和阻力。推力和扭矩通过沿螺旋桨半径积分得到。 然而，这将需要螺旋桨形状的高保真模型以及叶片段的升力和阻力系数函数。 由于这些原因，我们选择依赖下面描述的模型，基于实验数据。推进器动力学模型被提议为图 2-9 中所示的两个块表示。第一个模块是电子速度控制器 (ESC) 和无刷电机模块，它根据油门信号 τ 和电池电压 V batt 产生螺旋桨的旋转 ωp 。第二个块代表螺旋桨，给定它的旋转速度 ωp 和流入速度 vin 产生推力 T 和扭矩Q.每个推进器由一个ESC BeeRotor BS20A、一个BL280 2600KV电动机和一个直径125mm、螺距值75mm的螺旋桨组成。 请参阅附录表 F.1。同一个模型描述了每个推进器，具有自己的流入速度、角速度和油门信号，尽管电池电压对两个推进器来说是通用的，因为它们并联连接到同一个电池。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a25.png)
+
+螺旋桨角速度 ωp 被建模为 Vbatt 和 τ 的经验函数，并将在第 2.5.1 节中讨论.知道螺旋桨角速度 ωp 和流入速度 vin ，就可以按如下方式计算螺旋桨推力和扭矩。 首先，推进比J计算为流入速度与螺旋桨叶尖速度的比率。 使用 UIUC(29)的定义：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a26.png)
+
+其中 rp 是螺旋桨的半径。然后，推力系数 C T 和功率系数 C P 被建模为和 J相关的函数。这两个系数的模型将在第 2.5.1 节中描述。最后，推力 T 和扭矩 Q 计算如下：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a27.png)
+
+左右推进器的模型相同.
+
+
+### 2.3.7 地面接触动力学(忽略)
+
+
+### 2.4 简化的分析空气动力学模型
+
+
+图 2-11：简化的空气动力学模型图。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a28.png)
+
+与高保真模拟器不同，本研究中开发的控制器需要一个描述飞机空气动力学的简化分析模型。在图 2-11 中，该函数需要对左右油门信号 τl 、τr 以及左右升降舵偏转 δl 、δr 与车身力矩 MB = [L, M, N] T 的关系进行建模和前向力 F。
+
+为了将这个模型中评估的变量与更精确模型中的变量区分开来，我们使用overhat 表示法来表示估计。 例如，M̂表示简化模型中的俯仰力矩。向前推力估计为左右推力的总和：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a29.png)
+
+其中 T l 和 T r 是使用图 2-9 中描述的推进器模型从 τ l 和 τ r 评估的。偏航力矩估计为：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a30.png)
+
+其中 l 是右侧推进器在机身框架中的横向位置。roll力矩 L̂ 假定为滑流中升降舵产生的横摇力矩、滑流外升降舵产生的横摇力矩和螺旋桨扭矩之和：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a31.png)
+
+其中 cx 是考虑到滑流中升降舵的横摇力矩偏转系数，bx 是考虑到滑流外升降舵的横摇力矩偏转系数，Q l 和 Q r 是根据推进器模型评估的左右螺旋桨扭矩 图 2-9，ρ是空气密度，u 和 w 是飞机沿 x B 和 z B 轴的速度，vl、vr 是使用动量理论建模的左右滑流速度：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a32.png)
+
+其中 rp 是螺旋桨的半径。
+
+类似地，俯仰力矩假定为滑流中升降舵产生的俯仰力矩、滑流外升降舵产生的俯仰力矩和零偏转时的俯仰力矩之和。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a33.png)
+
+式中 cy 为滑流内升降舵的俯仰力矩偏转系数，b y 为滑流外升降舵的俯仰力矩偏转系数。  M̂ 0 是整个飞机在零偏转时的估计俯仰力矩，它是攻角和飞机速度的函数。  M̂ 0 在附录 D 中描述。弯矩挠度系数 c x 、c y 、b x 和 b y 将在第 2.5.3 节中评估。
+
+出于压实目的，XZ 动态压力 P d = 2/1 ρ(uu + ww) 以及等式 2.39 中定义的左右滑流速度可以代入等式 2.38 和 2.40。 我们最终得到以下描述简化分析空气动力学模型的方程组：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a34.png)
+
+这个简化的模型将在第 3.2.4 节中使用，其中控制器必须确定控制偏转以用于获得所需的控制力矩和力。
