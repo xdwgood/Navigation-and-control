@@ -410,3 +410,144 @@ Q = Mz         2.44
 图 2-15：推力和功率系数模型，提前比的函数。
 
 所使用的模型假设，在垂直下降期间出现的负提前比下，静态系数是有效的。 对于较小的负提前比率 (-0.3 < J < 0)，该假设得到了实验数据的验证(32)。
+
+
+### 2.5.2 控制面偏转图(Control Surface Deflection Map)
+
+
+为了对控制面建模，进行了测量以将归一化伺服信号 s 与偏转角 δ 联系起来。 随着伺服信号的变化，使用数字角度计（Capri Tools CP20005）测量偏转角。伺服电机的输入是脉冲宽度调制 (PWM) 信号，它由 Pixhawk 机载计算机生成。 对于该系统，PWM 高电平时间范围为 850 至 2150us。 从归一化伺服信号到 PWM 高电平时间的映射是线性的，对于右左升降舵给出如下：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a44.png)
+
+其中 sl , sr 是范围从 -1 到 1 的归一化伺服信号，而 PWM h 是范围从 850 到 2150μs的 PWM 高电平时间。
+
+相应的测量升降舵偏转如图 2-16 所示。观察到这种关系是线性和对称的，最大摆动幅度39°。因此，与偏转 δ 和伺服信号 s 相关的线性关系简单地由下式给出：
+
+δl = sl δmax ,  δr = sr δmax         2.51
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a45.png)
+
+### 2.5.3 控制面有效性
+
+
+本节讨论为研究操纵面偏转 δ l 和 δ r 的影响而执行的测量。 整个飞机首先安装在力扭矩传感器上，以测量用于方程 2.41 中简化空气动力学模型的升降舵偏转系数 c x 和 c y。 在模拟器中进行了类似的测量，以测量 cx 、cy 、bx 和 by。
+
+力/扭矩传感器的台架测试
+
+实验装置如图 2-17 所示:
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a46.png)
+
+图 2-17：控制面有效性测试台。 飞机的质心位于传感器原点上方距离 z 处。飞机的质心位于传感器原点上方距离 z = 0.236m处。 恒定的推力命​​令 τ 和电池电压 V batt 被施加到每个推进器。 根据之前介绍的推进器模型，这些对应于每个推进器的推力为 0.66N（大约为最大推力的三分之一）。 在这个推进器工作点和零升降舵偏转，力扭矩传感器归零。它导致传感器读取的力和力矩的差异为：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a47.png)
+
+其中 D 是由于螺旋桨下洗气流造成的飞机阻力，L 和 M 是飞机的横摇和俯仰力矩，假设仅由于操纵面偏转。 这些量之前的 ∆ 符号表示与归零工作点的差异。 因为两个推进器都以相同的转速运行，所以它们的扭矩抵消了。
+
+参考简化模型，对于方程 2.41 给出的横摇力矩 L̂ 和俯仰力矩 M̂，并考虑到飞机是静态的（即动压 P d = 0）并且两个推力相等且恒定 Tl = Tr = T,在这种情况下可以使用以下关系：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a48.png)
+
+通过对左右升降舵施加对称相反的偏转δl=-δr=δ，可以从扭矩传感器测得的滚动力矩 L 中检索出滚动力矩系数 cx 为 Mx ：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a49.png)
+
+类似地，俯仰力矩系数 cy 可以从由测量给出的俯仰力矩 M 中恢复为 M = zFx − My ，通过对升降舵应用对称和相等的偏转 δ l = δ r = δ：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a50.png)
+
+系数取为多次测量的平均值，如表 2-5 和 2-6 所示。 这些测量是有意在高挠度下进行的，以测量大力矩并避免达到传感器精度限制。 结果值为：
+
+c x = 9.91 · 10 -4 [m 3 /rad]，c y = 4.74 · 10 -4 [m 3 /rad]     2.56
+
+从下面俩个图可以看出来，roll指的就是多旋翼状态下的yaw。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a51.png)
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a52.png)
+
+模拟器中的台架测试
+
+在模拟器中执行相同的程序以找到 c X 和 c y 系数，以便将它们与从力/扭矩传感器获得的值进行比较。考虑方程 2.38 和 2.40 的简化模型中的 L̂ 和 M̂ 并假设飞机是静态的（即 u = 0，w = 0），并且两个推进器都以相同的转速旋转（即 Q r = Q l 和滑流 vl  = vr = vs )，我们得到：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a53.png)
+
+对于模拟器中的以下测量，滑流速度设置为 v s = 1m/s，（推进器未运行且 vs 是硬编码的）。滚动系数 cx 可以通过施加相等和相反的挠度来获得，δ l = -δ r = δ：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a54.png)
+
+测量滚动力矩偏转系数，同时将偏转δ设置在从δ min 到δ max 线性间隔的10个不同位置δ i 。 求解 cx ，我们得到：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a55.png)
+
+结果数据点 cx,i 显示在图 2-18 中，cx 的值取自 10 次测量的平均值：  c x,sim = 2.35 · 10 −3 [m 3 /rad]        2.60
+
+图 2-18：来自模拟器的滚动力矩偏转系数。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a56.png)
+
+类似地，通过施加相等的挠度，可以得到俯仰力矩挠度系数cy，δ l = δ r = δ：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a57.png)
+
+测量俯仰力矩，同时将挠度 δ 设置在从 δ min 到 δ max 线性间隔的 10 个不同位置 δ i 。 求解 cy ，我们得到：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a58.png)
+
+数据点 cy,i 如图 2-19 所示，cy 的值取自 10 次测量的平均值：      c y,sim = 3.5 · 10 -4 [m 3 /rad]      2.63
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a59.png)
+
+为了测量滑流bx 和by 之外的偏转力矩系数，建议考虑具有零迎角的流入风速u 且两个推进器未运行的飞机，然后可以通过知道cx 、cy 来提取bx 、by 。 考虑方程 2.38 和 2.40 的简化模型中的 L̂ 和 M̂，并假设 w = 0、v l = u、v r = u、Q r = 0 和 Q l = 0，我们得到：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a60.png)
+
+滚动系数 bx 可以通过施加相等和相反的挠度来获得，δ l = -δ r = δ：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a61.png)
+
+测量滚动力矩偏转系数，同时将偏转δ设置在从δ min 到δ max 线性间隔的10个不同位置δ i 。 求解 b x ，使用 cx = cx,sim ，我们得到：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a62.png)
+
+结果数据点 bx,i 显示在图 2-20 中，bx 的值取自 10 次测量的平均值：   b x,sim = 2.22 · 10 -3 [m 3 /rad]      2.67
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a63.png)
+
+俯仰系数 b y 可以通过施加相等的挠度来获得，δl = δr = δ：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a64.png)
+
+测量俯仰力矩偏转系数，同时将偏转δ设置在从δ min 到δ max 线性间隔的10个不同位置δ i 。 求解 b y ，使用 cy = cy,sim ，我们得到：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a65.png)
+
+数据点 by,i 显示在图 2-21 中，by 的值取自 10 次测量的平均值：    by,sim = 2.57 · 10 -4 [m 3 /rad]       2.70
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a66.png)
+
+模拟器中的 cx 值约为测量值的 2.5 倍，而模拟器中的 cy 值低约 25%，表明操纵面对俯仰力矩更有效对roll力矩影响更少。在实际飞行中，与在模拟器中完成相同的机动相比，观察到回旋机动更快，而观察到的滚转机动要慢得多。测量值和模拟值之间的这种巨大差异可能是由于模型中的假设造成的，例如动量理论用于预测升降副翼上的滑流，以及假设机翼轮廓采用平板这一事实。测量值被认为比模拟系数值更能代表真实的空气动力学。
+
+知道 cx,sim , cy,sim 的模拟值与 cx , cy 的实验值之间的差异，选择使用以下 bx 和 by 值：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a67.png)
+
+其中，乘以实验值与模拟值的比率有望捕捉到差异。 换句话说，对于滑流外和滑流中的升降舵效率，假定相同的差异比。 控制器使用的控制导数系数 cx 、cy 、bx 和 by 的值汇总在附录 H 表 H.1 中。
+
+模拟器修改
+
+为了利用实验测量来改进模拟器，我们选择按 c x /c x,sim 缩放由于偏转引起的滚动力矩和由于偏转引起的俯仰力矩 c y /c y,sim 。为此，计算给定升降舵偏转时的侧倾和俯仰力矩以及零偏转时的侧倾和俯仰力矩，并将所选力矩设置为：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a68.png)
+
+缩放的效果如图 2-22 和 2-23 所示。 相对于使用真实平台进行手动飞行测试，减少滚动力矩大大提高了模拟器的保真度。 缩放俯仰力矩的效果似乎对图 2-23 中的曲线没有很大影响，但它对观察到的机动有重大影响。 例如，饱和升降舵偏转时的后过渡距离减少了约 40%。
+
+图 2-22：滚动力矩系数以蓝色显示，未缩放，在偏转效应按 c x /c x,sim 缩放后显示为黑色。  δ l = δ max , δ r = δ min 处的力矩用纯线表示，δ l = δ min , δ r = δ max 处的矩用虚线表示。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a69.png)
+
+图 2-23：俯仰力矩系数以蓝色显示，未缩放，在偏转效应按 c y /c y,sim 缩放后显示为黑色。 最小挠度处的力矩用普通线表示，最大挠度处的力矩用虚线表示。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a70.png)
+
+
+## 第三部分：控制策略
