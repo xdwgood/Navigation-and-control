@@ -551,3 +551,142 @@ c x = 9.91 · 10 -4 [m 3 /rad]，c y = 4.74 · 10 -4 [m 3 /rad]     2.56
 
 
 ## 第三部分：控制策略
+
+
+图 3-1：级联四元数控制器的框图。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a71.png)
+
+控制器框图如图 3-1 所示。 其目标是生成执行器信号 τ l , τ r , δ l , δ r 以实现参考行为。 行为的特征在于系统的状态，即位置 p、速度 v B 、姿态 q 和身体速率 ω B 。 这些状态是通过随 PX4 飞行堆栈封装的扩展卡尔曼滤波器 (EKF) 根据机载传感器测量值估计的。 有关 EKF 及其准确性的更多详细信息，请参见附录 F。
+
+参考状态由机动发生器产生，它产生参考位置 p ref 、姿态 q ref 和前进速度 u ref 。不包括其他状态作为参考的原因是该系统的欠驱动特性。例如，由于推进器只能产生向前的力，因此只有速度 u ref 的向前分量用作参考。 机动生成器在 3.1 节中描述。
+
+然后控制器负责跟踪参考位置、姿态和前进速度。 由于系统的欠驱动特性，位置控制器首先重新调整飞机的所需姿态，使推进器指向参考位置。然后，姿态控制器计算实现这种重新定向所需的力矩。 同时，推力控制器调节纵向力以确保速度和高度跟踪。 最后，致动器混合器根据所需的力和力矩生成致动器信号。 控制器在第 3.2 节中描述。
+
+控制算法基于为敏捷固定翼无人机的特技机动而开发的级联四元数控制器。 控制器全局相同，除了少量修改外，主要是增加了执行器混合器。 该控制器不假设任何特定的操作点，这意味着无论飞行模式如何，所有操作都使用相同的控制器。
+
+
+### 3.1 机动生成器
+
+机动生成器被实现为一个有限状态机，以确保一致的逻辑。 它在每个瞬间生成参考位置 p ref 、姿态 q ref 和纵向速度 u ref 。为了评估开发的控制器的可行性，图 3-2 中显示的最小飞行任务被用作第一个测试。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a72.png)
+
+在这次任务中，飞机从地面开始，机头向上。 它起飞并垂直爬升到参考高度，然后过渡到平飞。在水平飞行期间，飞机跟踪水平线、高度和速度。飞行一段指定距离后，飞机通过俯仰向后过渡，然后在向后飞行中缓慢下降，直到离地几厘米，执行器停止着陆。第二个测试的机动是倾斜转弯，用于评估飞机也执行横向机动的能力。
+
+
+### 3.1.1 垂直机动
+
+
+本节介绍悬停、爬升和下降等垂直机动。 在这些机动过程中，参考姿态被设置为垂直姿态，从欧拉角检索，如下：其中 ψ ref 是用户指定的参考航向。
+
+q vert = q( ψ = ψ ref , θ = π/2 , φ = 0 )         3.1
+
+在起飞期间，参考位置设置在初始位置 p0 以上至少一米，以确保快速机动并最大限度地减少飞机在推进器运行时与地面接触的时间。在此期间，参考速度设置为 u ref = 0。可以通过指定恒定参考位置并设置零参考速度 u ref 来生成悬停参考。可以通过线性增加参考高度 h ref = -p ref,z 并保持参考速度恒定u ref = dh ref /dt 来获得垂直爬升。相同的程序可用于生成具有负参考速度的垂直下降。
+
+着陆实施为垂直下降到几厘米的高度，在那里油门被切断，控制面设置为零偏转。 这允许飞机从这个小高度降落在地面上，完成着陆阶段。
+
+### 3.1.2 水平飞行
+
+在水平飞行期间，飞机在参考高度 h lvl 处跟踪水平线。 参考位置设置为 p∥：当前位置，沿着在具有初始航向的水平高度处创建的线投影。 它可以由一个水平指向初始航向方向 u0 的单位向量构成：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a73.png)
+
+平飞时，参考姿态设置为平飞姿态： q lvl = q (ψ = ψ 0, θ lvl (V), φ = 0)       3.3
+
+其中 θ lvl 是预先计算的平衡俯仰角，考虑了机翼升力，作为水平飞行速度 V 的函数。正如针对敏捷固定翼飞机(14)提出的，这个参考俯仰角是从自由体图计算的 在平飞期间，如图 3-4 所示。 攻角可以从车身框架速度中检索：  α = atan2 (w, u)     3.4
+
+图 3-4：水平飞行自由体图。        图 3-3：飞翼尺寸。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a74.png)
+
+在这种特殊情况下，俯仰角等于攻角，θ lvl = α。 从图 3-4 中，沿垂直轴和水平轴的力的总和可以计算为：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a75.png)
+
+我们可以通过组合这些方程来消除 F：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a76.png)
+
+升力和阻力现在可以分解为标准的空气动力学方程，以显示对巡航速度 V 的依赖性：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a77.png)
+
+其中 ρ 是空气密度，S 是机翼表面积，由图 3-3 中的飞翼模型中的 Ŝ 估计，而 C L 和 C D 是升力和阻力系数。 然后可以将速度隔离为：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a78.png)
+
+升力和阻力系数可以通过线性模型近似，因为飞机预计会在低迎角水平飞行。 在这个线性范围内，以下方程用于描述升力和阻力系数：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a79.png)
+
+其中 C D,0 = 0.02 是皮肤摩擦引起的阻力系数，k 0 = 0.87 是 Oswald 的效率系数(21)。 对于固定翼，升力曲线斜率可以近似为(18)：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a80.png)
+
+图 3-5：水平飞行中的平衡俯仰角。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a81.png)
+
+其中 Λ = 19.8 ◦ 是后掠角，AR = b*b / Ŝ = 3.2 是纵横比，均从图 3-3 中获得。现在可以通过结合方程 3.8、3.10 和 3.9 来找到任何俯仰角的水平飞行速度。 由此，可以找到 θlvl(V) 的反比​​关系，如图 3-5 所示。 最后，拟合该数据的曲线产生：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a82.png)
+
+平飞最后需要的参考是前进速度 u ref ，它是通过三角学从参考巡航速度 V 中找到的：   u ref = V cosθ ref    3.12
+
+### 3.1.3 传输
+
+在模拟器中，过渡和返回过渡期间的参考姿态 q ref 是不连续的，但对于实际飞行实验，平滑过渡是必要的，以提高稳定性。可以通过使用参考俯仰角的半余弦函数来消除不连续性，如下所示：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a83.png)
+
+其中 θv = π/2是参考垂直俯仰角，θ lvl 是第 3.1.2 节中描述的参考水平飞行俯仰角，tt,0 是过渡开始的时间，在飞行过程中记录，T tr 是过渡的持续时间。等效地，可以按如下方式设置后退过渡：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a84.png)
+
+其中 t b,0 是向后过渡开始的时间，在飞行期间记录，Tb是向后过渡的持续时间。过渡期间的位置和速度参考值设置为 p ref = p ∥ 和 u ref = Vcosθ ref。后向过渡更加精细。 启动后退过渡时，保存当前投影位置 p ∥ 并用作整个后退过渡的参考位置：    p ref = p ∥ (tb,0)      3.15
+从平飞开始，飞机最初将继续向前移动，而 p ref 将在其后面以确保短暂的向后过渡。 速度设置为 u ref = V cos θ ref 。当飞机开始向后指向时，后向过渡结束，即航向改变方向：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a85.png)
+
+其中三项中的最小值确保航向差异的连续性。
+
+### 3.1.4 倾斜转弯
+
+为了使系统在垂直平面外的机动中起作用，机动发生器应该能够产生倾斜转弯。 在这种情况下，飞机需要以水平速度 V 描述半径为 R 的弧。从图3-6，飞机水平方向的运动方程为：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a87.png)
+
+
+图 3-6：倾斜转弯自由车身图，后视图。      图 3-7：倾斜转弯参考轨迹，顶视图。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a86.png)
+
+其中 V*V /R 是转向中心向内的向心加速度，φ 是roll角度。扩大升力产生：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a88.png)
+
+再次，使用方程给出的升力的线性模型。式子3.9，正参考坡度角可以检索为：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a89.png)
+
+保持高度恒定的垂直力平衡由下式给出：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a90.png)
+
+为避免失去高度，理想情况下，相对于平飞，在倾斜转弯期间应增加升力。由于假定推力和位置控制器负责所需的升力修改，因此将忽略此影响。 这导致平飞中的以下姿态参考：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a91.png)
+
+其中 θ lvl (V) 在方程 3.11 中定义，φ ref 在方程 3.19 中给出，ψt 定义如下。 符号 σ 代表转弯的符号，定义为 σ = 1 表示右转，σ = -1 表示左转。从图 3-7 中，已知初始位置 p 0 和初始航向 ψ 0 的圆心可以计算为：
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a92.png)
+
+知道圆心 pc ，可以通过将当前位置 p 投影到描述轨迹的半径为 R 的圆上来获得转弯位置 p t，如图 3-7 所示。
+
+![IMAGE ALT TEXT HERE](https://github.com/xdwgood/Navigation-and-control/blob/xdwgood-patch-1/a93.png)
+
+转弯 ψt 期间的参考航向为：    ψt = γ + σπ / 2       3.25  其中 ψt 被调整以保持在其定义的范围 [−π;  π]。在倾斜转弯期间，参考速度与平飞相同：u ref = Vcos θ ref  3.26
+
+
+### 3.2 控制器
