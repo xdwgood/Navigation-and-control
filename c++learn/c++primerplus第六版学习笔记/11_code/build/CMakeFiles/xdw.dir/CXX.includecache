@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/xdw/Navigation-and-control/c++learn/c++primerplus第六版学习笔记/11_code/mytime.cpp
+mytime.h
+/home/xdw/Navigation-and-control/c++learn/c++primerplus第六版学习笔记/11_code/mytime.h
+
+/home/xdw/Navigation-and-control/c++learn/c++primerplus第六版学习笔记/11_code/mytime.h
+iostream
+-
+
+/home/xdw/Navigation-and-control/c++learn/c++primerplus第六版学习笔记/11_code/useit.cpp
+iostream
+-
+mytime.h
+/home/xdw/Navigation-and-control/c++learn/c++primerplus第六版学习笔记/11_code/mytime.h
+
